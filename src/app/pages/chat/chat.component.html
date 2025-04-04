@@ -1,0 +1,96 @@
+<div class="flex justify-center items-center h-screen bg-fuchsia-100 p-4">
+  <!-- Contenedor principal (ahora en columna) -->
+  <div class="flex flex-row items-start  gap-8"> <!-- Cambiado a columna -->
+    <!-- Contenedor de los dos cuadros (horizontal) -->
+    <div class="flex flex-row gap-8 p-12"> <!-- gap-6 para separación horizontal -->
+      <div class="h-600px w-600px rounded-lg shadow-md p-6">
+        <h1 class="text-center text-6xl font-black text-blue-700 tracking-tight">
+          ATENCIONES
+        </h1>
+        <div >
+          <canvas baseChart [data]="pieChartAtencionesData" [options]="pieChartOptions" [type]="'pie'"> </canvas>
+        </div>
+      </div> <!-- Tamaño aumentado -->
+      <div class="w-min-full h-min-full rounded-lg shadow-md p-6">
+        <h1 class="text-center text-6xl font-black text-blue-700 tracking-tight">CITAS</h1>
+        <DIV>
+          <canvas baseChart [data]="pieChartCitasData" [options]="pieChartOptions" [type]="'pie'"> </canvas>
+        </DIV>
+
+
+      </div> <!-- Tamaño aumentado -->
+    </div>
+
+  <!-- Marco del celular con CSS -->
+<div class="relative w-[410px] h-[800px] bg-black rounded-[40px] p-[1px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6),0_0_15px_rgba(0,0,0,0.3)_inset] border-[13px] border-black transform perspective-1000 rotate-x-[-5deg] rotate-y-[2deg] overflow-hidden">    <!-- Botón de inicio ficticio -->
+    <div class="absolute bottom-[10px] left-1/2 transform -translate-x-1/2 w-[100px] h-[5px] bg-gray-700 rounded-full"></div>
+    <!-- Cámara frontal -->
+    <div class="absolute top-[15px] left-1/2 transform -translate-x-1/2 w-[15px] h-[15px] bg-gray-800 rounded-full"></div>    
+    <!-- Contenedor del chat que se ajusta a la pantalla del celular -->
+    <div class="h-full w-full bg-white rounded-[30px] overflow-hidden flex flex-col">
+      <div class="flex justify-between items-center p-3 bg-slate-800">
+        <div class="flex items-center space-x-4">
+          <!-- Logo circular ROE -->
+          <div class="w-10 h-10 rounded-full overflow-hidden bg-red flex items-center justify-center p-1">
+            <img src="assets/Roe_screen.png" alt="ROE Logo" class="w-full h-full">
+          </div>
+          <!-- Nombre y check verde -->
+          <div class="flex items-center">
+            <h1 class="text-xl font-bold text-white font">ROE</h1>
+          </div>
+        </div>
+        <!-- Botón de logout -->
+        <button mat-icon-button (click)="salir()" class="text-white hover:cursor-pointer hover:bg-white/10 rounded-full">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+<!-- Área del Chat con scroll -->
+<div #chatContainer class="flex-1 p-2 overflow-y-auto bg-gray-50">
+  <!-- Mensajes del chat -->
+  <div *ngFor="let msg of messages" class="flex mb-4" [ngClass]="{'justify-end': msg.sender === 'Usuario', 'justify-start': msg.sender !== 'Usuario'}">
+    <!-- Ícono y Mensaje -->
+    <div class="flex items-start max-w-[85%] min-w-0" [ngClass]="{'flex-row-reverse': msg.sender === 'Usuario'}">
+      <!-- Ícono (más grande) -->
+      <div class="flex-shrink-0 self-start" [ngClass]="{'ml-3': msg.sender === 'Usuario', 'mr-3': msg.sender !== 'Usuario'}">
+        <mat-icon *ngIf="msg.sender === 'Usuario'" class="text-blue-500" style="font-size: 36px; width: 36px; height: 36px;">face</mat-icon>
+        <img *ngIf="msg.sender !== 'Usuario'" src="assets/chat.png" class="w-12 h-12 rounded-full object-cover">
+       </div>
+      
+      <!-- Mensaje con texto ajustado -->
+      <div class="p-4 rounded-lg shadow-sm min-w-0" 
+           [ngClass]="{'bg-blue-500 text-white': msg.sender === 'Usuario', 'bg-gray-100 text-gray-800': msg.sender !== 'Usuario'}">
+        <span class="text-sm text-justify block break-words whitespace-pre-wrap overflow-hidden"
+        [innerHTML]="linkifyHtmlContent(msg.text)"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Animación de "escribiendo..." mejorada -->
+  <div *ngIf="isBotTyping" class="flex justify-start mb-3">
+    <div class="flex items-end max-w-[85%] min-w-0">
+      <div class="flex-shrink-0 mr-3">
+        <img  src="assets/chat.png" class="w-12 h-12 rounded-full object-cover">
+      </div>
+      <mat-spinner diameter="20" strokeWidth="3" class=" flex items-start mr-2"></mat-spinner>
+      </div>
+  </div>
+</div>
+
+<div class="flex items-center p-3 bg-white border-t gap-2 border-gray-200">
+  <!-- Input de mensaje -->
+  <input matInput 
+         [(ngModel)]="newMessage" 
+         (keyup.enter)="sendMessage()" 
+         placeholder="Escribe un mensaje..."
+         class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+  
+  <!-- Botón de enviar mejorado -->
+  <button (click)="sendMessage()" class="text-blue-500">
+    <mat-icon class="hover:scale-110 hover:cursor-pointer transition-transform duration-200">send</mat-icon>
+  </button>
+</div>
+    </div>
+  </div>
+</div>
+
+</div>

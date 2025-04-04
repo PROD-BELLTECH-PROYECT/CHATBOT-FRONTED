@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'chatbot' title`, () => {
+  it(`should have the 'ChatbotAgent' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('chatbot');
+    expect(app.title).toEqual('ChatbotAgent');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, chatbot');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, ChatbotAgent');
   });
 });
