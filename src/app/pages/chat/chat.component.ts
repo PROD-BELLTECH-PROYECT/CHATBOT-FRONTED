@@ -6,11 +6,23 @@ import { MatIconModule } from '@angular/material/icon';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'; // 🔹 Importa DomSanitizer
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
+import { Chart, PieController, ArcElement, Legend, Tooltip, ChartType, ChartConfiguration, TooltipItem } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+
+Chart.register(ChartDataLabels);
 
 interface Message {
   sender: string;
   text: SafeHtml; // Cambiamos el tipo a SafeHtml para HTML seguro
   timestamp: Date;
+}
+interface PieChartData {
+  labels: string[];
+  datasets: {
+    data: number[];
+    backgroundColor: string[];
+  }[];
 }
 
 @Component({
@@ -20,57 +32,59 @@ interface Message {
   styleUrl: './chat.component.css'
 })
 export class ChatComponent implements OnInit,AfterViewChecked  {
-  pieChartAtencionesData = {
-    labels: ['Sin Respuesta', 'En Curso', 'Atendidas'],
-    datasets: [{
-        data: [20, 40, 80],
-        backgroundColor: ['#a8e1f1', '#aaece3', '#36adb5'],
-    }],
+  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+
+// Tipo de gráfico
+public pieChartType: ChartType = 'pie';
+// Datos del gráfico de Atenciones (tonos azulados intensos)
+public pieChartAtencionesData = {
+  labels: ['Sin Respuesta', 'En Curso', 'Atendidas'],
+  datasets: [{
+    data: [20, 40, 80], 
+    backgroundColor: ['#bfdbfe', '#93c5fd', '#60a5fa']
+  }]
 };
 
-pieChartCitasData = {
-    labels: ['Citas Reservadas', 'Citas No Logradas'],
-    datasets: [{
-        data: [400, 200],
-        backgroundColor: ['#a8e1f1', '#54c4e3'],
-    }],
-}
+// Datos del gráfico de Citas (azules/celestes brillantes)
+public pieChartCitasData = {
+  labels: ['Citas Reservadas', 'Citas No Logradas'],
+  datasets: [{
+    data: [400, 200],
+    backgroundColor: ['#60a5fa', '#bfdbfe'], // Celeste brillante, Turquesa
+  }],
+};
 
-pieChartOptions = {
-    responsive: true,
-    plugins: {
-        legend: {
-            position: 'bottom', // Muestra la leyenda abajo
-            labels: {
-                boxWidth: 12,
-                padding: 20
-            }
-        },
-        tooltip: {
-            callbacks: {
-                label: function(context) {
-                    let label = context.label || '';
-                    let value = context.raw || 0;
-                    let total = context.dataset.data.reduce((a, b) => a + b, 0);
-                    let percentage = Math.round((value / total) * 100);
-                    return `${label}: ${percentage}%`;
-                }
-            }
-        },
-        datalabels: {
-            formatter: (value, context) => {
-                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                const percentage = Math.round((value / total) * 100);
-                return `${percentage}%`;
-            },
-            color: '#fff',
-            font: {
-                weight: 'bold',
-                size: 14
-            }
+public pieChartPlugins = [ChartDataLabels];
+
+// Opciones del gráfico con porcentajes
+public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'bottom',
+      labels: {
+        font: {
+          size: 12
         }
+      }
+    },
+    datalabels: {
+      formatter: (value, context) => {
+        const data = context.chart.data.datasets[0].data as number[];
+        const total = data.reduce((acc, val) => acc + val, 0);
+        const percentage = ((value as number) / total * 100).toFixed(1);
+        return `${percentage}%`;
+      },
+      color: '#fff',
+      font: {
+        weight: 'bold',
+        size: 14
+      }
     }
+  }
 };
+
+
 
   salir() {
     sessionStorage.removeItem('token');
