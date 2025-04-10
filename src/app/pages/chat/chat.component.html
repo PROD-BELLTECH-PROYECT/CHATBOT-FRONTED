@@ -1,17 +1,18 @@
-<div class="flex justify-center items-center h-screen bg-fuchsia-100 p-4">
-  <div class="flex flex-col items-center gap-8 p-4">
-    <!-- Contenedor de los dos cuadros (horizontal) -->
-    <div class="flex flex-row gap-8 p-12 w-full justify-center">
-      <div class="max-h-[45vh] max-w-[45vh] rounded-lg shadow-md p-6 overflow-hidden">
-        <h1 class="text-center text-3xl font-black text-black tracking-tight font-serif">
+<div class="flex flex-row  h-screen w-screen bg-[#F1F1F1] p-6">  <!-- 📊 Sección izquierda (Gráficos) -->
+  <div class="flex flex-col gap-6 w-auto pl-28 ">
+    <div class="flex flex-row gap-8">
+      <div class="max-h-[50vh] max-w-[50vh] shadow-xl rounded-2xl p-6 overflow-hidden">
+        <h1 class="text-center text-black font-light" style="font-family: 'Raleway', sans-serif">
           ATENCIONES
         </h1>
+        
         <div class="w-full h-full overflow-hidden">
           <canvas baseChart [data]="pieChartAtencionesData" [options]="pieChartOptions" [type]="'pie'"></canvas>
         </div>
       </div> <!-- Tamaño ajustado -->
-      <div class="max-h-[45vh] max-w-[45vh] rounded-lg shadow-md p-6 overflow-hidden">
-        <h1 class="text-center text-3xl font-black text-black tracking-tight font-serif">
+      <div class="max-h-[50vh] max-w-[50vh] shadow-xl rounded-2xl p-6 overflow-hidden">
+
+        <h1 class="text-center text-black font-light" style="font-family: 'Raleway', sans-serif">
           CITAS
         </h1>
         <div class="w-full h-full overflow-hidden">
@@ -21,66 +22,80 @@
     </div>
   </div>
   
-  9
-  
+
 
 
   <!-- Marco del celular con CSS -->
-  <div class="relative w-[23vw] h-[98vh] bg-black rounded-[40px] p-[1px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6),0_0_15px_rgba(0,0,0,0.3)_inset] border-[13px] border-black transform perspective-1000 rotate-x-[-5deg] rotate-y-[2deg] overflow-hidden">
+  <div class="flex-1 flex items-center justify-center">
+  <div class="relative w-[24vw] h-[98vh] bg-black rounded-[40px] p-[1px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6),0_0_15px_rgba(0,0,0,0.3)_inset] border-[13px] border-black transform perspective-1000 rotate-x-[-5deg] rotate-y-[2deg] overflow-hidden">
+    
+
     <div class="absolute bottom-[10px] left-1/2 transform -translate-x-1/2 w-[100px] h-[5px] bg-gray-700 rounded-full"></div>
     <!-- Cámara frontal -->
-    <div class="absolute top-[15px] left-1/2 transform -translate-x-1/2 w-[15px] h-[15px] bg-gray-800 rounded-full"></div>    
+    <div class="absolute top-[8px] left-1/2 transform -translate-x-1/2 w-[15px] h-[15px] bg-black rounded-full"></div>    
     <!-- Contenedor del chat que se ajusta a la pantalla del celular -->
     <div class="h-full w-full bg-white rounded-[30px] overflow-hidden flex flex-col">
-      <div class="flex justify-between items-center p-3 bg-slate-800">
-        <div class="flex items-center space-x-4">
-          <!-- Logo circular ROE -->
-          <div class="w-10 h-10 rounded-full overflow-hidden bg-red flex items-center justify-center p-1">
-            <img src="assets/Roe_screen.png" alt="ROE Logo" class="w-full h-full">
-          </div>
-          <!-- Nombre y check verde -->
+      <div class="flex justify-between items-center p-3 bg-slate-800 h-16">
+        <!-- Div izquierdo -->
+        <div class="flex gap-2 h-full">
+          <!-- Logo (se mantiene centrado) -->
           <div class="flex items-center">
-            <h1 class="text-xl font-bold text-white font">ROE</h1>
+            <img src="assets/belltech_logo.jpg" alt="Logo"
+                 class="w-11 h-11 rounded-full object-cover border-2 border-white">
+          </div>
+          
+          <!-- Texto alineado abajo -->
+          <div class="flex flex-col align-botton py-3"> <!-- Contenedor para alinear texto abajo -->
+            <h1 class="text-xl font-black text-white leading-none"> <!-- leading-none elimina espacio extra -->
+              Belltech Assistant
+            </h1>
           </div>
         </div>
-        <!-- Botón de logout -->
-        <button mat-icon-button (click)="salir()" class="text-white hover:cursor-pointer hover:bg-white/10 rounded-full">
-          <mat-icon>logout</mat-icon>
-        </button>
+      
+        <!-- Div derecho (Botón) -->
+        <div class="h-full flex items-center">
+          <button mat-icon-button (click)="salir()"
+                  class="text-white hover:bg-white/15 p-2">
+            <mat-icon class="text-2xl">logout</mat-icon>
+          </button>
+        </div>
       </div>
-      <div #chatContainer class="flex-1 p-1 overflow-y-auto bg-gray-50">
+      
+    <div #chatContainer class="flex-1 p-1 overflow-y-auto bg-gray-50">
         <!-- Mensajes del chat -->
         <div *ngFor="let msg of messages" class="flex mb-3" [ngClass]="{'justify-end': msg.sender === 'Usuario', 'justify-start': msg.sender !== 'Usuario'}">
           <!-- Ícono y Mensaje -->
           <div class="flex items-start max-w-[80%] min-w-0" [ngClass]="{'flex-row-reverse': msg.sender === 'Usuario'}">
             <!-- Ícono (más pequeño) -->
             <div class="flex-shrink-0 self-start" [ngClass]="{'ml-2': msg.sender === 'Usuario', 'mr-2': msg.sender !== 'Usuario'}">
-              <mat-icon *ngIf="msg.sender === 'Usuario'" class="text-blue-500" style="font-size: 28px; width: 28px; height: 28px;">face</mat-icon>
-              <img *ngIf="msg.sender !== 'Usuario'" src="assets/chat.png" class="w-8 h-8 rounded-full object-cover">
+              <mat-icon *ngIf="msg.sender === 'Usuario'" class="text-blue-500" style="font-size: 30px; width: 28px; height: 28px;">face</mat-icon>
+              <img *ngIf="msg.sender !== 'Usuario'" src="assets/chat.png" class="w-12 h-12 rounded-full object-cover">
             </div>
             
             <!-- Mensaje con texto ajustado -->
             <div class="p-3 rounded-lg shadow-sm min-w-0" 
                  [ngClass]="{'bg-blue-500 text-white': msg.sender === 'Usuario', 'bg-gray-100 text-gray-800': msg.sender !== 'Usuario'}">
-              <span class="text-xs text-justify block break-words whitespace-pre-wrap overflow-hidden"
+              <span class="text-[16px] text-justify block break-words whitespace-pre-wrap overflow-hidden"
               [innerHTML]="linkifyHtmlContent(msg.text)"></span>
             </div>
           </div>
         </div>
-      
         <!-- Animación de "escribiendo..." mejorada -->
         <div *ngIf="isBotTyping" class="flex justify-start mb-2">
-          <div class="flex items-end max-w-[80%] min-w-0">
+          <div class="flex items-center max-w-[80%] min-w-0">
+            <!-- Avatar -->
             <div class="flex-shrink-0 mr-2">
-              <img src="assets/chat.png" class="w-8 h-8 rounded-full object-cover">
+              <img src="assets/chat.png" class="w-12 h-12 rounded-full object-cover">
             </div>
-            <div class="flex items-center">
+          
+            <!-- Spinner + texto -->
+            <div class="flex items-center space-x-1">
               <mat-spinner diameter="16" strokeWidth="2" color="primary"></mat-spinner>
-              <span class="ml-1 text-xs">Cargando...</span>
+              <span class="text-[16px]">Cargando...</span>
             </div>
           </div>
         </div>
-      </div>
+    </div>
       
 
 <div class="flex items-center p-3 bg-white border-t gap-2 border-gray-200">
@@ -98,6 +113,8 @@
 </div>
     </div>
   </div>
+</div>
+
 </div>
 
 

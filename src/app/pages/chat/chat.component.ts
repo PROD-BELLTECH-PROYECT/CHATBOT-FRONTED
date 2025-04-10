@@ -41,7 +41,7 @@ public pieChartAtencionesData = {
   labels: ['Sin Respuesta', 'En Curso', 'Atendidas'],
   datasets: [{
     data: [20, 40, 80], 
-    backgroundColor: ['#bfdbfe', '#93c5fd', '#60a5fa']
+    backgroundColor: ['#8ff30f', '#f9770b', '#00b0cc']
   }]
 };
 
@@ -50,7 +50,7 @@ public pieChartCitasData = {
   labels: ['Citas Reservadas', 'Citas No Logradas'],
   datasets: [{
     data: [400, 200],
-    backgroundColor: ['#60a5fa', '#bfdbfe'], // Celeste brillante, Turquesa
+    backgroundColor: ['#00b0cc', '#f9770b'], // Celeste brillante, Turquesa
   }],
 };
 
@@ -75,7 +75,7 @@ public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
         const percentage = ((value as number) / total * 100).toFixed(1);
         return `${percentage}%`;
       },
-      color: '#fff',
+      color: 'black',
       font: {
         weight: 'bold',
         size: 14
@@ -96,7 +96,7 @@ public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
   session_id: string = sessionStorage.getItem('token') || "";
   messages: Message[] = [];
   newMessage: string = '';
-  apiUrl = 'https://uou2wn6au4.execute-api.us-east-1.amazonaws.com/Prod'; // Reemplaza con la URL de tu API
+  apiUrl = 'https://i2v4xs1387.execute-api.us-west-2.amazonaws.com/Prod'; // Reemplaza con la URL de tu API
 
   constructor(private http: HttpClient, public sanitizer: DomSanitizer) {}
 
@@ -119,7 +119,7 @@ public pieChartOptions: ChartConfiguration<'pie'>['options'] = {
   private showWelcomeMessage(): void {
     const welcomeMessage: Message = {
       sender: 'AGENTE ROE',
-      text: this.sanitizer.bypassSecurityTrustHtml('Hola, ¿Quieres realizar una cita o presupuesto?'),
+      text: this.sanitizer.bypassSecurityTrustHtml('Hola, ¿En que te puedo ayudar?'),
       timestamp: new Date()
     };
     this.messages.push(welcomeMessage); // Agregar el mensaje de bienvenida al array de mensajes
