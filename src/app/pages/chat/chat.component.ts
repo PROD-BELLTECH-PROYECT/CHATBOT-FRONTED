@@ -8,7 +8,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, PieController, ArcElement, Legend, Tooltip, ChartType, ChartConfiguration, TooltipItem } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { timer } from 'rxjs';
+import { WebSocketService } from '../../service/webSocket.service';
+import { Subscription } from 'rxjs';
 
 
 
@@ -24,7 +25,7 @@ body: {
 
 interface Message {
   sender: string;
-  text: SafeHtml;
+  text: string;
   timestamp: Date;
 }
 
@@ -45,6 +46,8 @@ interface PieChartData {
 export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   @ViewChild('chatContainer') private chatContainer!: ElementRef;
+    private wsSub!: Subscription;
+  allResponses: string[] = []; // lo defines en la clase
 
   // Configuración de gráficos
   public pieChartType: ChartType = 'pie';
@@ -102,12 +105,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   private readonly maxRetries = 3;
   private readonly retryDelay = 2000;
   private currentQuestion = '';
+  private currentResponse = '';
   private retryCount = 0;
 
-  constructor(private http: HttpClient, public sanitizer: DomSanitizer) {}
+  constructor(private http: HttpClient, public sanitizer: DomSanitizer,  private wsService: WebSocketService  ) {}
 
   ngOnInit(): void {
     this.showWelcomeMessage();
+    
   }
 
   ngAfterViewChecked(): void {
@@ -131,7 +136,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   private showWelcomeMessage(): void {
     const welcomeMessage: Message = {
       sender: 'AGENTE ROE',
-      text: this.sanitizer.bypassSecurityTrustHtml('Hola, ¿En qué te puedo ayudar?'),
+      text: 'Hola, ¿En qué te puedo ayudar?',
       timestamp: new Date()
     };
     this.messages.push(welcomeMessage);
@@ -150,11 +155,16 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     const userMessage: Message = {
       sender: 'Usuario',
-      text: this.sanitizer.bypassSecurityTrustHtml(this.newMessage),
+      text:this.newMessage,
       timestamp: new Date()
     };
 
     this.messages.push(userMessage);
+    this.wsService.sendMessage({
+      question: this.newMessage,
+      session_id: this.session_id,
+      interaction: this.messages.length.toString()
+    });
     this.loadMessages(this.newMessage);
     this.newMessage = '';
   }
@@ -163,52 +173,27 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.isBotTyping = true;
     this.currentQuestion = question;
     this.retryCount = 0;
-    this.attemptApiCall();
-  }
-  private attemptApiCall() {
-    const body = {
-      body: `{\"session_id\": \"${this.session_id}\", \"question\": \"${this.currentQuestion}\"}`
-    };
-
-    this.http.post<ValidateResponse>(this.apiUrl, body).subscribe(
-      response => {
-        console.log(response);
-        if (response.statusCode === 200) {
-          const apisondeo = `https://chkyab1fzl.execute-api.us-east-1.amazonaws.com/prod?session_id=${response.body.group}`;
-          
-          this.http.post<{respuesta:string,local_time:string}>(apisondeo, {}
-          ).subscribe(
-            sondeoResponse => {
-              console.log(sondeoResponse['respuesta']);
-              const botMessage: Message = {
-                sender: 'Bot',
-                text: this.sanitizer.bypassSecurityTrustHtml(sondeoResponse.respuesta),
-                timestamp: new Date()
-              };
-              this.messages.push(botMessage);
-              this.isBotTyping = false;
-            },
-            error => {
-              console.error('Error en la segunda solicitud POST:', error);
-            }
-          );
-        }
-      },
-      error => {
-        console.error('Error en la primera solicitud POST:', error);
-      }
-    );
-    }
-
-  private handleFinalError() {
-    this.isBotTyping = false;
-    const errorMessage: Message = {
-      sender: 'Bot',
-      text: this.sanitizer.bypassSecurityTrustHtml(
-        '⚠️ Lo siento, hubo un problema al procesar tu pregunta. ¿Podrías reformularla o intentar nuevamente?'
-      ),
+    this.wsSub = this.wsService.getMessages().subscribe((response) => {
+  if (
+    response &&
+    response.session_id === this.session_id &&
+    response.interaction === this.messages.length.toString()
+  ) {
+    // Captura el mensaje más reciente en una variable
+    this.currentResponse = response.answer;
+    console.log('Respuesta del servidor:',response);
+    const botMessage: Message = {
+      sender: 'AGENTE ROE',
+      text: this.currentResponse,
       timestamp: new Date()
     };
-    this.messages.push(errorMessage);
+    this.messages.push(botMessage);
+    this.isBotTyping = false;
+    this.scrollToBottom();
   }
+});
+
+  }
+
+
 }
